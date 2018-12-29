@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 void main() => runApp(MyApp());
 
@@ -6,11 +7,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Random Pi Estimation',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Random Pi Estimation'),
     );
   }
 }
@@ -25,11 +26,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  List<double> _randomPoints = new List();
 
-  void _incrementCounter() {
+  void _addRandomPoint() {
     setState(() {
-      _counter++;
+      // Generates random double from 0.0 inclusive to 1.0 exclusive
+      _randomPoints.add(Random.secure().nextDouble());
     });
   }
 
@@ -40,22 +42,15 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
+        child: ListView.builder(
+            itemCount: _randomPoints.length,
+            itemBuilder: (BuildContext ctxt, int index) =>
+                Text(_randomPoints[index].toString()),
+        )
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: _addRandomPoint,
+        tooltip: 'Add new random point',
         child: Icon(Icons.add),
       ),
     );
