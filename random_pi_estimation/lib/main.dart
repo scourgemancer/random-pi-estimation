@@ -26,12 +26,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<double> _randomPoints = new List();
+  List<_RandomPoint> _randomPoints = new List();
 
   void _addRandomPoint() {
     setState(() {
       // Generates random double from 0.0 inclusive to 1.0 exclusive
-      _randomPoints.add(Random.secure().nextDouble());
+      _randomPoints.add(new _RandomPoint());
     });
   }
 
@@ -44,8 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: ListView.builder(
             itemCount: _randomPoints.length,
-            itemBuilder: (BuildContext ctxt, int index) =>
-                Text(_randomPoints[index].toString()),
+            itemBuilder: (BuildContext ctxt, int index) => _randomPoints[index],
         )
       ),
       floatingActionButton: FloatingActionButton(
@@ -54,5 +53,24 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
       ),
     );
+  }
+}
+
+class _RandomPoint extends StatelessWidget {
+  Point<double> randomPoint;
+
+  double getRandomCoordinate() {
+    double magnitude = Random.secure().nextDouble();
+    bool isNegative = Random.secure().nextBool();
+    return (isNegative) ? -magnitude : magnitude;
+  }
+
+  _RandomPoint() {
+    randomPoint = new Point(getRandomCoordinate(), getRandomCoordinate());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Text(randomPoint.toString());
   }
 }
