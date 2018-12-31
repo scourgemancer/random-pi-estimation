@@ -30,7 +30,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _addRandomPoint() {
     setState(() {
-      // Generates random double from 0.0 inclusive to 1.0 exclusive
       _randomPoints.add(new _RandomPoint());
     });
   }
@@ -59,10 +58,24 @@ class _MyHomePageState extends State<MyHomePage> {
 class _RandomPoint extends StatelessWidget {
   Point<double> randomPoint;
 
+  double getX() {
+    return randomPoint.x;
+  }
+
+  double getY() {
+    return randomPoint.y;
+  }
+
+  // Generates a random double from -1.0 to 1.0, both exclusive
   double getRandomCoordinate() {
     double magnitude = Random.secure().nextDouble();
     bool isNegative = Random.secure().nextBool();
     return (isNegative) ? -magnitude : magnitude;
+  }
+
+  // Calculates if the point is within the bounds of a circle with radius 1
+  bool isInCircle() {
+    return 1 > randomPoint.distanceTo(Point(0, 0));
   }
 
   _RandomPoint() {
@@ -71,6 +84,6 @@ class _RandomPoint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Text(randomPoint.toString());
+    return new Text(isInCircle().toString() + " " + randomPoint.toString());
   }
 }
