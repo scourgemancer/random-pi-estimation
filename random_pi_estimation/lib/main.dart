@@ -28,10 +28,25 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<_RandomPoint> _randomPoints = new List();
 
+  int _numInCircle = 0;
+
   void _addRandomPoint() {
     setState(() {
       _randomPoints.add(new _RandomPoint());
+      if (_randomPoints.last.isInCircle()) {
+        _numInCircle++;
+      }
     });
+  }
+
+  // Use the random points so far to estimate the value of pi
+  double estimatePi() {
+    return (_numInCircle / _randomPoints.length) * 4.0;
+  }
+
+  // Use the random points so far to estimate the value of tau
+  double estimateTau() {
+    return 2.0 * (_numInCircle / _randomPoints.length) * 4.0;
   }
 
   @override
@@ -41,10 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: ListView.builder(
-            itemCount: _randomPoints.length,
-            itemBuilder: (BuildContext ctxt, int index) => _randomPoints[index],
-        )
+        child: Text("$_numInCircle / ${_randomPoints.length} = " +
+            "${_numInCircle / _randomPoints.length}\n" +
+            "π = ${estimatePi()}"),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addRandomPoint,
@@ -56,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class _RandomPoint extends StatelessWidget {
-  Point<double> randomPoint;
+  final Point<double> randomPoint = Point(_getCoordinate(), _getCoordinate());
 
   double getX() {
     return randomPoint.x;
@@ -67,7 +81,7 @@ class _RandomPoint extends StatelessWidget {
   }
 
   // Generates a random double from -1.0 to 1.0, both exclusive
-  double getRandomCoordinate() {
+  static double _getCoordinate() {
     double magnitude = Random.secure().nextDouble();
     bool isNegative = Random.secure().nextBool();
     return (isNegative) ? -magnitude : magnitude;
@@ -76,10 +90,6 @@ class _RandomPoint extends StatelessWidget {
   // Calculates if the point is within the bounds of a circle with radius 1
   bool isInCircle() {
     return 1 > randomPoint.distanceTo(Point(0, 0));
-  }
-
-  _RandomPoint() {
-    randomPoint = new Point(getRandomCoordinate(), getRandomCoordinate());
   }
 
   @override
