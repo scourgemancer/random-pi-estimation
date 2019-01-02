@@ -56,9 +56,14 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Text("$_numInCircle / ${_randomPoints.length} = " +
-            "${_numInCircle / _randomPoints.length}\n" +
-            "π = ${estimatePi()}"),
+        child: Column(
+          children: <Widget>[
+            _CircleGraph(),
+            Text("$_numInCircle / ${_randomPoints.length} = " +
+              "${_numInCircle / _randomPoints.length}\n" +
+              "π = ${estimatePi()}"),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addRandomPoint,
@@ -95,5 +100,51 @@ class _RandomPoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Text(isInCircle().toString() + " " + randomPoint.toString());
+  }
+}
+
+class _CircleGraph extends StatefulWidget {
+  @override
+  _CircleGraphState createState() => _CircleGraphState();
+}
+
+class _CircleGraphState extends State<_CircleGraph> {
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
+    return new AspectRatio(
+      aspectRatio: 1.0,
+      child: new Stack(
+        children: <Widget>[
+          new Container(
+            margin: EdgeInsets.all(0.1 * width),
+            width: 0.8 * width,
+            height: 0.8 * width,
+            decoration: new BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Colors.white,
+              border: Border.all(),
+              boxShadow: [
+                new BoxShadow(
+                  offset: new Offset(0.0, 5.0),
+                  blurRadius: 5.0,
+                )
+              ],
+            ),
+          ),
+          new Container(
+            margin: EdgeInsets.all(0.1 * width),
+            width: 0.8 * width,
+            height: 0.8 * width,
+            decoration: new BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              border: Border.all(),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
