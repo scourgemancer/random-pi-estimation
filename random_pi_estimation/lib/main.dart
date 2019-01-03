@@ -1,52 +1,102 @@
 import 'package:flutter/material.dart';
+import 'package:redux/redux.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'dart:math';
 
-void main() => runApp(MyApp());
+@immutable
+class AppState {
+  final List<RandomPoint> randomPoints;
+  final CircleGraph graph;
+  final int numInCircle;
 
-class MyApp extends StatelessWidget {
+  AppState(
+      {this.randomPoints = const[],
+        this.graph = const CircleGraph(),
+        this.numInCircle = 0});
+}
+
+// The estimator only ever adds new random points or clears all present ones
+enum Actions {
+  AddRandomPoint,
+  ClearPointGraph
+}
+
+AppState estimatorReducer(AppState state, dynamic action) {
+  if (action == Actions.AddRandomPoint) {
+    RandomPoint newPoint = new RandomPoint();
+    state.randomPoints.add(newPoint);
+
+    return AppState(
+      randomPoints: state.randomPoints,
+      graph: state.graph,
+      numInCircle: (newPoint.isInCircle())
+          ? state.numInCircle + 1 : state.numInCircle,
+    );
+  } else if (action == Actions.ClearPointGraph){
+    return AppState(
+      randomPoints: const[],
+      graph: const CircleGraph(),
+      numInCircle: 0,
+    );
+  } else {
+    return state;
+  }
+}
+
+void main() {
+  final store = new Store<AppState>(
+      estimatorReducer,
+      initialState: AppState()
+  );
+
+  runApp(RandomPiEstimator(title: 'Random Pi Estimation', store: store));
+}
+
+class RandomPiEstimator extends StatelessWidget {
+  final Store<AppState> store;
+  final String title;
+
+  RandomPiEstimator({Key key, this.store, this.title}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Random Pi Estimation',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Random Pi Estimation'),
+    return new StoreProvider<AppState>(
+        store: store,
+        child: MaterialApp(
+          title: title,
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: HomePage(title: 'Random Pi Estimation'),
+        )
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class HomePage extends StatefulWidget {
+  HomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  List<_RandomPoint> _randomPoints = new List();
-
-  int _numInCircle = 0;
-
-  void _addRandomPoint() {
-    setState(() {
-      _randomPoints.add(new _RandomPoint());
-      if (_randomPoints.last.isInCircle()) {
-        _numInCircle++;
-      }
-    });
+class _HomePageState extends State<HomePage> {
+  StoreConnector<AppState, AppState> generatePiEstimation() {
+    return new StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (context, state) =>
+            Text(((state.numInCircle / state.randomPoints.length) * 4.0).toString())
+    );
   }
 
-  // Use the random points so far to estimate the value of pi
-  double estimatePi() {
-    return (_numInCircle / _randomPoints.length) * 4.0;
-  }
-
-  // Use the random points so far to estimate the value of tau
-  double estimateTau() {
-    return 2.0 * (_numInCircle / _randomPoints.length) * 4.0;
+  StoreConnector<AppState, AppState> generateTauEstimation() {
+    return new StoreConnector<AppState, AppState>(
+        converter: (store) => store.state,
+        builder: (context, state) =>
+            Text(((state.numInCircle / state.randomPoints.length) * 4.0 * 2.0).toString())
+    );
   }
 
   @override
@@ -58,23 +108,36 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           children: <Widget>[
-            _CircleGraph(),
-            Text("$_numInCircle / ${_randomPoints.length} = " +
-              "${_numInCircle / _randomPoints.length}\n" +
-              "π = ${estimatePi()}"),
+            new StoreConnector<AppState, CircleGraph>(
+              converter: (store) => store.state.graph,
+                builder: (context, graph) => graph
+            ),
+            new StoreConnector<AppState, AppState>(
+                converter: (store) => store.state,
+                builder: (context, state) =>
+                    Text("${state.numInCircle} / ${state.randomPoints.length}"
+                        + " = ${state.numInCircle / state.randomPoints.length}")
+            ),
+            generatePiEstimation(),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addRandomPoint,
-        tooltip: 'Add new random point',
-        child: Icon(Icons.add),
+      floatingActionButton: new StoreConnector<AppState, VoidCallback>(
+        converter: (store) {
+          return () => store.dispatch(Actions.AddRandomPoint);
+        },
+        builder: (context, callback) =>
+            FloatingActionButton(
+              onPressed: callback,
+              tooltip: 'Add new random point',
+              child: Icon(Icons.add),
+          )
       ),
     );
   }
 }
 
-class _RandomPoint extends StatelessWidget {
+class RandomPoint extends StatelessWidget {
   final Point<double> randomPoint = Point(_getCoordinate(), _getCoordinate());
 
   double getX() {
@@ -103,48 +166,53 @@ class _RandomPoint extends StatelessWidget {
   }
 }
 
-class _CircleGraph extends StatefulWidget {
+class CircleGraph extends StatefulWidget {
+  const CircleGraph();
+
   @override
-  _CircleGraphState createState() => _CircleGraphState();
+  CircleGraphState createState() => CircleGraphState();
 }
 
-class _CircleGraphState extends State<_CircleGraph> {
+class CircleGraphState extends State<CircleGraph> {
+  List<Widget> plottedPoints = <Widget>[];
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
 
     return new AspectRatio(
       aspectRatio: 1.0,
-      child: new Stack(
-        children: <Widget>[
-          new Container(
-            margin: EdgeInsets.all(0.1 * width),
-            width: 0.8 * width,
-            height: 0.8 * width,
-            decoration: new BoxDecoration(
-              shape: BoxShape.rectangle,
-              color: Colors.white,
-              border: Border.all(),
-              boxShadow: [
-                new BoxShadow(
-                  offset: new Offset(0.0, 5.0),
-                  blurRadius: 5.0,
-                )
-              ],
+      child: new Container(
+        margin: EdgeInsets.all(0.1 * width),
+        child: Stack(
+          children: <Widget>[
+            new Container(
+              width: 0.8 * width,
+              height: 0.8 * width,
+              decoration: new BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: Colors.white,
+                border: Border.all(),
+                boxShadow: [
+                  new BoxShadow(
+                    offset: new Offset(0.0, 5.0),
+                    blurRadius: 5.0,
+                  )
+                ],
+              ),
             ),
-          ),
-          new Container(
-            margin: EdgeInsets.all(0.1 * width),
-            width: 0.8 * width,
-            height: 0.8 * width,
-            decoration: new BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              border: Border.all(),
+            new Container(
+              width: 0.8 * width,
+              height: 0.8 * width,
+              decoration: new BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                border: Border.all(),
+              ),
             ),
-          ),
-        ],
-      ),
+          ]..addAll(plottedPoints),
+        ),
+      )
     );
   }
 }
