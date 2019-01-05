@@ -24,10 +24,13 @@ enum Actions {
 AppState estimatorReducer(AppState state, dynamic action) {
   if (action == Actions.AddRandomPoint) {
     RandomPoint newPoint = new RandomPoint();
-    state.randomPoints.add(newPoint);
+    List<RandomPoint> newPointList =
+      new List<RandomPoint>
+          .from(state.randomPoints)
+        ..add(newPoint);
 
     return AppState(
-      randomPoints: state.randomPoints,
+      randomPoints: newPointList,
       graph: state.graph,
       numInCircle: (newPoint.isInCircle())
           ? state.numInCircle + 1 : state.numInCircle,
@@ -128,7 +131,7 @@ class _HomePageState extends State<HomePage> {
         },
         builder: (context, callback) =>
             FloatingActionButton(
-              onPressed: callback,
+              onPressed: () => setState(() {callback();}),
               tooltip: 'Add new random point',
               child: Icon(Icons.add),
           )
