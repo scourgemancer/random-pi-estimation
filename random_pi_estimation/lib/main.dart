@@ -91,8 +91,14 @@ class _HomePageState extends State<HomePage> {
   StoreConnector<AppState, AppState> generatePiEstimation() {
     return new StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
-        builder: (context, state) =>
-            Text(((state.numInCircle / state.numTotalRandom) * 4.0).toString())
+        builder: (context, state) => 
+            new Text(
+              "π ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0)}",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
+              overflow: TextOverflow.fade,
+              maxLines: 1,
+              softWrap: false,
+            ),
     );
   }
 
@@ -100,7 +106,13 @@ class _HomePageState extends State<HomePage> {
     return new StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (context, state) =>
-            Text(((state.numInCircle / state.numTotalRandom) * 4.0 * 2.0).toString())
+            new Text(
+              "π ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0)}",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
+              overflow: TextOverflow.fade,
+              maxLines: 1,
+              softWrap: false,
+            ),
     );
   }
 
@@ -114,11 +126,21 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: <Widget>[
             new CircleGraph(),
+            new Row(
+              children: <Widget>[
+                new Text("(# in the circle) / (total #) * 100"),
+                new Text(" = "),
+                new Text("(percentage in the circle)"),
+              ],
+              mainAxisAlignment: MainAxisAlignment.center,
+            ),
             new StoreConnector<AppState, AppState>(
                 converter: (store) => store.state,
                 builder: (context, state) =>
-                    Text("${state.numInCircle} / ${state.numTotalRandom}"
-                        + " = ${state.numInCircle / state.numTotalRandom}")
+                    Text("\n(${state.numInCircle} / ${state.numTotalRandom})"
+                        + " * 100 = "
+                        + "${state.numInCircle / state.numTotalRandom * 100}%"
+                        + "\n")
             ),
             generatePiEstimation(),
           ],
