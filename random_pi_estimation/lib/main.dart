@@ -91,13 +91,17 @@ class _HomePageState extends State<HomePage> {
   StoreConnector<AppState, AppState> generatePiEstimation() {
     return new StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
-        builder: (context, state) => 
-            new Text(
-              "π ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0)}",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
-              overflow: TextOverflow.fade,
-              maxLines: 1,
-              softWrap: false,
+        builder: (context, state) =>
+            new SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Text(
+                "π ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0)}",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
+                overflow: TextOverflow.fade,
+                maxLines: 1,
+                softWrap: false,
+                textAlign: TextAlign.center,
+              ),
             ),
     );
   }
@@ -106,13 +110,17 @@ class _HomePageState extends State<HomePage> {
     return new StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
         builder: (context, state) =>
-            new Text(
-              "π ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0)}",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
-              overflow: TextOverflow.fade,
-              maxLines: 1,
-              softWrap: false,
-            ),
+        new SizedBox(
+          width: MediaQuery.of(context).size.width * 0.8,
+          child: Text(
+            "𝜏 ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0 * 2.0)}",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
+            overflow: TextOverflow.fade,
+            maxLines: 1,
+            softWrap: false,
+            textAlign: TextAlign.center,
+          ),
+        ),
     );
   }
 
