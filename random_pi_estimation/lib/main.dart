@@ -130,33 +130,68 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            new CircleGraph(),
-            new Row(
-              children: <Widget>[
-                new Text("(# in the circle) / (total #) * 100"),
-                new Text(" = "),
-                new Text("(percentage in the circle)"),
-              ],
-              mainAxisAlignment: MainAxisAlignment.center,
-            ),
-            new StoreConnector<AppState, AppState>(
-                converter: (store) => store.state,
-                builder: (context, state) =>
-                    Text("\n(${state.numInCircle} / ${state.numTotalRandom})"
-                        + " * 100 = "
-                        + "${state.numInCircle / state.numTotalRandom * 100}%"
-                        + "\n")
-            ),
-            generatePiEstimation(),
-          ],
-        ),
+      body: Column(
+        children: <Widget>[
+          new CircleGraph(),
+          new Row(
+            children: <Widget>[
+              new Text("(# in the circle) / (total #) * 100"),
+              new Text(" = "),
+              new Text("(percentage in the circle)"),
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+          ),
+          new StoreConnector<AppState, AppState>(
+              converter: (store) => store.state,
+              builder: (context, state) =>
+                  Text("\n(${state.numInCircle} / ${state.numTotalRandom})"
+                      + " * 100 = "
+                      + "${state.numInCircle / state.numTotalRandom * 100}%"
+                      + "\n")
+          ),
+          generatePiEstimation(),
+          new StoreConnector<AppState, VoidCallback>(
+              converter: (store) {
+                return () => store.dispatch( Actions.AddRandomPoint );
+              },
+              builder: (context, callback) =>
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      RaisedButton(
+                        child: Text("Add 1"),
+                        onPressed: () => setState(() {callback();}),
+                      ),
+                      RaisedButton(
+                        child: Text("Add 10"),
+                        onPressed: () {for(int i=0; i<10; i++){
+                          setState(() {callback();});
+                        }},
+                      ),
+                      RaisedButton(
+                        child: Text("Add 100"),
+                        onPressed: () {for(int i=0; i<100; i++){
+                          setState(() {callback();});
+                        }},
+                      ),
+                      new StoreConnector<AppState, VoidCallback>(
+                        converter: (store) {
+                          return () => store.dispatch( Actions.ClearPointGraph );
+                        },
+                        builder: (context, callback) =>
+                            RaisedButton(
+                              child: Text("Clear"),
+                              onPressed: () => setState(() {callback();}),
+                            ),
+                      ),
+                    ],
+                  ),
+          ),
+        ],
       ),
       floatingActionButton: new StoreConnector<AppState, VoidCallback>(
         converter: (store) {
-          return () => store.dispatch(Actions.AddRandomPoint);
+          return () => store.dispatch(  Actions.AddRandomPoint);
         },
         builder: (context, callback) =>
             FloatingActionButton(
