@@ -189,17 +189,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      floatingActionButton: new StoreConnector<AppState, VoidCallback>(
-        converter: (store) {
-          return () => store.dispatch(  Actions.AddRandomPoint);
-        },
-        builder: (context, callback) =>
-            FloatingActionButton(
-              onPressed: () => setState(() {callback();}),
-              tooltip: 'Add new random point',
-              child: Icon(Icons.add),
-          )
-      ),
     );
   }
 }
@@ -227,14 +216,6 @@ class RandomPoint extends StatelessWidget {
     return 1 > randomPoint.distanceTo(Point(0, 0));
   }
 
-  double _getGraphLeftMargin() {
-    return (0.5 + (getX() / 2)) * graphWidth;
-  }
-
-  double _getGraphTopMargin() {
-    return (0.5 + (getY() / 2)) * graphWidth;
-  }
-
   Color _getRandomColor() {
     return Color((Random.secure().nextDouble() * 0xFFFFFF).toInt() << 0)
         .withOpacity(1.0);
@@ -244,8 +225,8 @@ class RandomPoint extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Container(
       margin: EdgeInsets.only(
-        left: _getGraphLeftMargin(),
-        top: _getGraphTopMargin(),),
+        left: (0.5 + (getX() / 2)) * graphWidth,
+        top:  (0.5 + (getY() / 2)) * graphWidth,),
       width: 0.05 * graphWidth,
       height: 0.05 * graphWidth,
       decoration: new BoxDecoration(
