@@ -88,6 +88,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  double pointsPerSecond = 0;
+
+  void _newDuration(double newDuration) {
+    setState(() {pointsPerSecond = newDuration;});
+  }
+
   StoreConnector<AppState, AppState> generatePiEstimation() {
     return new StoreConnector<AppState, AppState>(
         converter: (store) => store.state,
@@ -155,37 +161,58 @@ class _HomePageState extends State<HomePage> {
                 return () => store.dispatch( Actions.AddRandomPoint );
               },
               builder: (context, callback) =>
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Column(
                     children: <Widget>[
-                      RaisedButton(
-                        child: Text("Add 1"),
-                        onPressed: () => setState(() {callback();}),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          RaisedButton(
+                            child: Text("Add 1"),
+                            onPressed: () => setState(() {callback();}),
+                          ),
+                          RaisedButton(
+                            child: Text("Add 10"),
+                            onPressed: () {for(int i=0; i<10; i++){
+                              setState(() {callback();});
+                            }},
+                          ),
+                          RaisedButton(
+                            child: Text("Add 100"),
+                            onPressed: () {for(int i=0; i<100; i++){
+                              setState(() {callback();});
+                            }},
+                          ),
+                          new StoreConnector<AppState, VoidCallback>(
+                            converter: (store) {
+                              return () => store.dispatch( Actions.ClearPointGraph );
+                            },
+                            builder: (context, callback) =>
+                                RaisedButton(
+                                  child: Text("Clear"),
+                                  onPressed: () => setState(() {callback();}),
+                                ),
+                          ),
+                        ],
                       ),
-                      RaisedButton(
-                        child: Text("Add 10"),
-                        onPressed: () {for(int i=0; i<10; i++){
-                          setState(() {callback();});
-                        }},
-                      ),
-                      RaisedButton(
-                        child: Text("Add 100"),
-                        onPressed: () {for(int i=0; i<100; i++){
-                          setState(() {callback();});
-                        }},
-                      ),
-                      new StoreConnector<AppState, VoidCallback>(
-                        converter: (store) {
-                          return () => store.dispatch( Actions.ClearPointGraph );
-                        },
-                        builder: (context, callback) =>
-                            RaisedButton(
-                              child: Text("Clear"),
-                              onPressed: () => setState(() {callback();}),
-                            ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text("Add ${pointsPerSecond.toInt()} a second:"),
+                          Slider(
+                            value: pointsPerSecond,
+                            min: 0,
+                            max: 100,
+                            divisions: 100,
+                            onChanged: (double value) => _newDuration(value),
+                          ),
+                          RaisedButton(
+                            child: Text("Stop"),
+                            onPressed: () => setState(() {_newDuration(0);}),
+                          )
+                        ],
                       ),
                     ],
-                  ),
+                  )
           ),
         ],
       ),
