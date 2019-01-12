@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:redux/redux.dart';
-import 'package:flutter_redux/flutter_redux.dart';
+import 'dart:async';
 import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
 
 double graphWidth;
 
@@ -88,10 +89,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  double pointsPerSecond = 0;
+  double pointsPerMinute = 0;
+  Timer runningTimer;
 
-  void _newDuration(double newDuration) {
-    setState(() {pointsPerSecond = newDuration;});
+  @override
+  void dispose() {
+    runningTimer?.cancel();
+    super.dispose();
+  }
+
+  void _newDuration(double newDuration, Function addFunction) {
+    setState(() {pointsPerMinute = newDuration;});
+    if (pointsPerMinute == 0) {
+      runningTimer?.cancel();
+    } else {
+      runningTimer = Timer.periodic(
+          Duration(milliseconds: ((60*1000) ~/ pointsPerMinute)),
+              (Timer t) {
+                if (runningTimer.isActive) {
+                  addFunction();
+                }});
+    }
   }
 
   StoreConnector<AppState, AppState> generatePiEstimation() {
@@ -197,17 +215,20 @@ class _HomePageState extends State<HomePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text("Add ${pointsPerSecond.toInt()} a second:"),
+                          Text("Add ${pointsPerMinute.toInt()} a minute:"),
                           Slider(
-                            value: pointsPerSecond,
+                            value: pointsPerMinute,
                             min: 0,
                             max: 100,
                             divisions: 100,
-                            onChanged: (double value) => _newDuration(value),
+                            onChanged: (double value) =>
+                                _newDuration(value, callback),
                           ),
                           RaisedButton(
                             child: Text("Stop"),
-                            onPressed: () => setState(() {_newDuration(0);}),
+                            onPressed: () => setState(() {
+                              _newDuration(0, callback);
+                            }),
                           )
                         ],
                       ),
