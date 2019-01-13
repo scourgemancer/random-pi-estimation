@@ -324,16 +324,18 @@ class CircleGraphState extends State<CircleGraph> {
                           ],
                         ),
                       ),
-                      new Container(
-                        width: 0.8 * graphWidth,
-                        height: 0.8 * graphWidth,
-                        decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          border: Border.all(),
+                    ]..addAll(randomPoints)
+                      ..add(
+                        new Container(
+                          width: 0.8 * graphWidth,
+                          height: 0.8 * graphWidth,
+                          decoration: new BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.transparent,
+                            border: Border.all(),
+                          ),
                         ),
                       ),
-                    ]..addAll(randomPoints),
                   ),
                 )
             )
