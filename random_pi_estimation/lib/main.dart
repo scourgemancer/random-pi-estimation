@@ -98,11 +98,10 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void _newDuration(double newDuration, Function addFunction) {
+  void _setTimerSpeed(double newDuration, Function addFunction) {
+    runningTimer?.cancel();
     setState(() {pointsPerMinute = newDuration;});
-    if (pointsPerMinute == 0) {
-      runningTimer?.cancel();
-    } else {
+    if (pointsPerMinute != 0) {
       runningTimer = Timer.periodic(
           Duration(milliseconds: ((60*1000) ~/ pointsPerMinute)),
               (Timer t) {
@@ -222,12 +221,12 @@ class _HomePageState extends State<HomePage> {
                             max: 100,
                             divisions: 100,
                             onChanged: (double value) =>
-                                _newDuration(value, callback),
+                                _setTimerSpeed(value, callback),
                           ),
                           RaisedButton(
                             child: Text("Stop"),
                             onPressed: () => setState(() {
-                              _newDuration(0, callback);
+                              _setTimerSpeed(0, callback);
                             }),
                           )
                         ],
