@@ -331,7 +331,10 @@ class CircleGraphState extends State<CircleGraph> {
                           decoration: new BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.transparent,
-                            border: Border.all(),
+                            border: Border.all(
+                                width: (1 + (randomPoints.length/1000.0) > 3)
+                                    ? 3 :
+                                    1 + (randomPoints.length.toDouble()/1000)),
                           ),
                         ),
                       ),
