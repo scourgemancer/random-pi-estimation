@@ -285,16 +285,21 @@ class RandomPoint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      margin: EdgeInsets.only(
-        left: (0.5 + (getX() / 2)) * graphWidth,
-        top:  (0.5 + (getY() / 2)) * graphWidth,),
-      width: 0.05 * graphWidth,
-      height: 0.05 * graphWidth,
-      decoration: new BoxDecoration(
-        shape: BoxShape.circle,
-        color: _getRandomColor(),
-        border: Border.all(width: 0),
+
+    return new Positioned(
+      // the margin calculations are translating the random point's range of
+      //    [-1:1] to a range of [0:0.8], then subtracts the result by the
+      //    radius of the point's circle and multiplies by the graph's width
+      left: (0.4 + (getX() * 0.4) - 0.025) * graphWidth,
+      top: (0.4 + (getY() * 0.4) - 0.025) * graphWidth,
+      child: Container(
+        width: 0.05 * graphWidth,
+        height: 0.05 * graphWidth,
+        decoration: new BoxDecoration(
+          shape: BoxShape.circle,
+          color: _getRandomColor(),
+          border: Border.all(width: 0),
+        ),
       ),
     );
   }
