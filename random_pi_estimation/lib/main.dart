@@ -170,7 +170,15 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: <Widget>[
-          new CircleGraph(),
+          new Container(
+            margin: EdgeInsets.only(
+              top:    0.07 * MediaQuery.of(context).size.width,
+              left:   0.1  * MediaQuery.of(context).size.width,
+              right:  0.1  * MediaQuery.of(context).size.width,
+              bottom: 0.04 * MediaQuery.of(context).size.width,
+            ),
+            child: new CircleGraph(),
+          ),
           new Row(
             children: <Widget>[
               new Text("(# in the circle) / (total #) * 100"),
@@ -285,13 +293,12 @@ class RandomPoint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return new Positioned(
       // the margin calculations are translating the random point's range of
-      //    [-1:1] to a range of [0:0.8], then subtracts the result by the
-      //    radius of the point's circle and multiplies by the graph's width
-      left: (0.4 + (getX() * 0.4) - 0.025) * graphWidth,
-      top: (0.4 + (getY() * 0.4) - 0.025) * graphWidth,
+      //    [-1:1] to a range of [0:1], then subtracts the result by the radius
+      //    of the point's circle and multiplies by the graph's width
+      left: (0.5 + (getX() / 2) - 0.025) * graphWidth,
+      top:  (0.5 + (getY() / 2) - 0.025) * graphWidth,
       child: Container(
         width: 0.05 * graphWidth,
         height: 0.05 * graphWidth,
@@ -317,48 +324,39 @@ class CircleGraph extends StatefulWidget {
 class CircleGraphState extends State<CircleGraph> {
   @override
   Widget build(BuildContext context) {
-    graphWidth = MediaQuery.of(context).size.width;
+    graphWidth = 0.8 * MediaQuery.of(context).size.width;
 
     return new StoreConnector<AppState, List<RandomPoint>>(
         converter: (store) => store.state.randomPoints,
         builder: (context, randomPoints) =>
             AspectRatio(
                 aspectRatio: 1.0,
-                child: new Container(
-                  margin: EdgeInsets.all(0.1 * graphWidth),
-                  child: Stack(
-                    children: <Widget>[
+                child: Stack(
+                  children: <Widget>[
+                    new Container(
+                      width:  graphWidth,
+                      height: graphWidth,
+                      decoration: new BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        color: Colors.white,
+                        border: Border.all(),
+                      ),
+                    ),
+                  ]..addAll(randomPoints)
+                    ..add(
                       new Container(
-                        width: 0.8 * graphWidth,
-                        height: 0.8 * graphWidth,
+                        width:  graphWidth,
+                        height: graphWidth,
                         decoration: new BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: Colors.white,
-                          border: Border.all(),
-                          boxShadow: [
-                            new BoxShadow(
-                              offset: new Offset(0.0, 5.0),
-                              blurRadius: 5.0,
-                            )
-                          ],
+                          shape: BoxShape.circle,
+                          color: Colors.transparent,
+                          border: Border.all(
+                              width: (1 + (randomPoints.length/1000.0) > 3)
+                                  ? 3 :
+                              1 + (randomPoints.length.toDouble()/1000)),
                         ),
                       ),
-                    ]..addAll(randomPoints)
-                      ..add(
-                        new Container(
-                          width: 0.8 * graphWidth,
-                          height: 0.8 * graphWidth,
-                          decoration: new BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.transparent,
-                            border: Border.all(
-                                width: (1 + (randomPoints.length/1000.0) > 3)
-                                    ? 3 :
-                                    1 + (randomPoints.length.toDouble()/1000)),
-                          ),
-                        ),
-                      ),
-                  ),
+                    ),
                 )
             )
     );
