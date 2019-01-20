@@ -122,7 +122,10 @@ class _HomePageState extends State<HomePage> {
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Text(
                     "π ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0)}",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 50,
+                    ),
                     overflow: TextOverflow.fade,
                     maxLines: 1,
                     softWrap: false,
@@ -133,7 +136,10 @@ class _HomePageState extends State<HomePage> {
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: Text(
                     "± ${1 / state.numTotalRandom}\n",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20,),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
                     overflow: TextOverflow.fade,
                     maxLines: 2,
                     softWrap: false,
@@ -240,7 +246,9 @@ class _HomePageState extends State<HomePage> {
                           ),
                           new StoreConnector<AppState, VoidCallback>(
                             converter: (store) {
-                              return () => store.dispatch( Actions.ClearPointGraph );
+                              return () => store.dispatch(
+                                  Actions.ClearPointGraph
+                              );
                             },
                             builder: (context, callback) =>
                                 RaisedButton(
