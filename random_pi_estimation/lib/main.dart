@@ -5,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 double graphWidth;
+double pointRadius;
 
 @immutable
 class AppState {
@@ -294,14 +295,11 @@ class RandomPoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Positioned(
-      // the margin calculations are translating the random point's range of
-      //    [-1:1] to a range of [0:1], then subtracts the result by the radius
-      //    of the point's circle and multiplies by the graph's width
-      left: (0.5 + (getX() / 2) - 0.025) * graphWidth,
-      top:  (0.5 + (getY() / 2) - 0.025) * graphWidth,
+      left: (0.5 + (getX() / 2) - pointRadius) * graphWidth,
+      top:  (0.5 + (getY() / 2) - pointRadius) * graphWidth,
       child: Container(
-        width: 0.05 * graphWidth,
-        height: 0.05 * graphWidth,
+        width:  2 * pointRadius,
+        height: 2 * pointRadius,
         decoration: new BoxDecoration(
           shape: BoxShape.circle,
           color: _getRandomColor(),
@@ -315,8 +313,6 @@ class RandomPoint extends StatelessWidget {
 class CircleGraph extends StatefulWidget {
   const CircleGraph();
 
-  final double width = 0;
-
   @override
   CircleGraphState createState() => CircleGraphState();
 }
@@ -325,6 +321,7 @@ class CircleGraphState extends State<CircleGraph> {
   @override
   Widget build(BuildContext context) {
     graphWidth = 0.8 * MediaQuery.of(context).size.width;
+    pointRadius = pointRadius ?? 0.025 * graphWidth;
 
     return new StoreConnector<AppState, List<RandomPoint>>(
         converter: (store) => store.state.randomPoints,
