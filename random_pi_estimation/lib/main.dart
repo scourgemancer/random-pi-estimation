@@ -6,6 +6,7 @@ import 'package:redux/redux.dart';
 
 double graphWidth;
 double pointRadius;
+int maxVisiblePoints = 5000;
 
 @immutable
 class AppState {
@@ -32,6 +33,10 @@ AppState estimatorReducer(AppState state, dynamic action) {
       new List<RandomPoint>
           .from(state.randomPoints)
         ..add(newPoint);
+
+    if (newPointList.length > maxVisiblePoints) {
+      newPointList.removeAt(0);
+    }
 
     return AppState(
       randomPoints: newPointList,
