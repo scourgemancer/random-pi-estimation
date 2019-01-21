@@ -285,8 +285,8 @@ class RandomPoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Positioned(
-      left: (0.5 + (getX() / 2) - pointRadius) * graphWidth,
-      top:  (0.5 + (getY() / 2) - pointRadius) * graphWidth,
+      left: (0.5 + (getX() / 2)) * graphWidth - pointRadius,
+      top:  (0.5 + (getY() / 2)) * graphWidth - pointRadius,
       child: Container(
         width:  2 * pointRadius,
         height: 2 * pointRadius,
