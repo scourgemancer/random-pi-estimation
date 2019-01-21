@@ -237,8 +237,8 @@ class _HomePageState extends State<HomePage> {
                           Slider(
                             value: pointsPerMinute,
                             min: 0,
-                            max: 1000,
-                            divisions: 1000,
+                            max: 100000,
+                            divisions: 100000,
                             onChanged: (double value) =>
                                 _setTimerSpeed(value, callback),
                           ),
