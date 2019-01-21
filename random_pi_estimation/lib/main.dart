@@ -6,7 +6,7 @@ import 'package:redux/redux.dart';
 
 double graphWidth;
 double pointRadius;
-int maxVisiblePoints = 5000;
+int maxVisiblePoints = 1000;
 
 @immutable
 class AppState {
@@ -34,7 +34,7 @@ AppState estimatorReducer(AppState state, dynamic action) {
           .from(state.randomPoints)
         ..add(newPoint);
 
-    if (newPointList.length > maxVisiblePoints) {
+    while (newPointList.length > maxVisiblePoints) {
       newPointList.removeAt(0);
     }
 
@@ -250,6 +250,21 @@ class _HomePageState extends State<HomePage> {
                           )
                         ],
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text("$maxVisiblePoints visible points:"),
+                          Slider(
+                            value: maxVisiblePoints.toDouble(),
+                            min: 0,
+                            max: 1000,
+                            divisions: 1000,
+
+                            onChanged: (double value) => setState(() {
+                              maxVisiblePoints = value.round();}),
+                          ),
+                        ],
+                      ),
                     ],
                   )
           ),
@@ -261,6 +276,7 @@ class _HomePageState extends State<HomePage> {
 
 class RandomPoint extends StatelessWidget {
   final Point<double> randomPoint = Point(_getCoordinate(), _getCoordinate());
+  final Color pointColor = _getRandomColor();
 
   double getX() {
     return randomPoint.x;
@@ -282,7 +298,7 @@ class RandomPoint extends StatelessWidget {
     return 1 > randomPoint.distanceTo(Point(0, 0));
   }
 
-  Color _getRandomColor() {
+  static Color _getRandomColor() {
     return Color((Random.secure().nextDouble() * 0xFFFFFF).toInt() << 0)
         .withOpacity(1.0);
   }
@@ -297,7 +313,7 @@ class RandomPoint extends StatelessWidget {
         height: 2 * pointRadius,
         decoration: new BoxDecoration(
           shape: BoxShape.circle,
-          color: _getRandomColor(),
+          color: pointColor,
           border: Border.all(width: 0),
         ),
       ),
