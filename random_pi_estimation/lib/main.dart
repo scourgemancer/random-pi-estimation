@@ -5,7 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 double graphWidth;
-double pointRadius;
+double pointRadius = 0.025 * graphWidth;
 int maxVisiblePoints = 1000;
 bool estimateTau = false;
 
@@ -257,6 +257,20 @@ class _HomePageState extends State<HomePage> {
                           Text("$maxVisiblePoints"),
                         ],
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text("Point radius:"),
+                          Slider(
+                            value: pointRadius,
+                            min: 0,
+                            max: graphWidth/10,
+                            divisions: 1000,
+                            onChanged: (newValue) => setState(() {
+                              pointRadius = newValue;}),
+                          ),
+                        ],
+                      ),
                     ],
                   )
           ),
@@ -321,7 +335,7 @@ class RandomPoint extends StatelessWidget {
           decoration: new BoxDecoration(
             shape: BoxShape.circle,
             color: Colors.transparent,
-            border: Border.all(width: 1),
+            border: Border.all(width: (pointRadius > 0) ? 1 : 0),
           ),
         ),
       );
