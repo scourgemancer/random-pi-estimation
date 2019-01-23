@@ -7,6 +7,7 @@ import 'package:redux/redux.dart';
 double graphWidth;
 double pointRadius;
 int maxVisiblePoints = 1000;
+bool estimateTau = false;
 
 @immutable
 class AppState {
@@ -117,42 +118,22 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  StoreConnector<AppState, AppState> generatePiEstimation() {
+  StoreConnector<AppState, AppState> generateEstimation() {
     return new StoreConnector<AppState, AppState>(
-        converter: (store) => store.state,
-        builder: (context, state) =>
-            new SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Text(
-                "π ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0)}",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 50,
-                ),
-                overflow: TextOverflow.fade,
-                maxLines: 1,
-                softWrap: false,
-                textAlign: TextAlign.center,
-              ),
-            ),
-    );
-  }
-
-  StoreConnector<AppState, AppState> generateTauEstimation() {
-    return new StoreConnector<AppState, AppState>(
-        converter: (store) => store.state,
-        builder: (context, state) =>
-        new SizedBox(
-          width: MediaQuery.of(context).size.width * 0.8,
-          child: Text(
-            "𝜏 ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0*2.0)}",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
-            overflow: TextOverflow.fade,
-            maxLines: 1,
-            softWrap: false,
-            textAlign: TextAlign.center,
-          ),
+      converter: (store) => store.state,
+      builder: (context, state) =>
+      new SizedBox(
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: Text( (estimateTau) ?
+          "Τ ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0 * 2.0)}" :
+          "π ≈ ${((state.numInCircle / state.numTotalRandom) * 4.0)}",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
+          overflow: TextOverflow.fade,
+          maxLines: 1,
+          softWrap: false,
+          textAlign: TextAlign.center,
         ),
+      ),
     );
   }
 
@@ -164,9 +145,20 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: <Widget>[
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Text("π"),
+              new Switch(
+                value: estimateTau,
+                onChanged: (newValue) => setState(() {estimateTau = newValue;}),
+              ),
+              new Text("Τ"),
+            ],
+          ),
           new Container(
             margin: EdgeInsets.only(
-              top:    0.07 * MediaQuery.of(context).size.width,
+              top:    0,
               left:   0.1  * MediaQuery.of(context).size.width,
               right:  0.1  * MediaQuery.of(context).size.width,
               bottom: 0.04 * MediaQuery.of(context).size.width,
@@ -189,7 +181,7 @@ class _HomePageState extends State<HomePage> {
                       + "${state.numInCircle / state.numTotalRandom * 100}%"
                       + "\n")
           ),
-          generatePiEstimation(),
+          generateEstimation(),
           new StoreConnector<AppState, VoidCallback>(
               converter: (store) {
                 return () => store.dispatch( Actions.AddRandomPoint );
