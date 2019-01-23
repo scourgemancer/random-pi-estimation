@@ -253,16 +253,16 @@ class _HomePageState extends State<HomePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text("$maxVisiblePoints visible points:"),
+                          Text("Maximum # of visible points:"),
                           Slider(
                             value: maxVisiblePoints.toDouble(),
                             min: 0,
                             max: 1000,
                             divisions: 1000,
-
                             onChanged: (double value) => setState(() {
                               maxVisiblePoints = value.round();}),
                           ),
+                          Text("$maxVisiblePoints"),
                         ],
                       ),
                     ],
@@ -305,19 +305,35 @@ class RandomPoint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Positioned(
-      left: (0.5 + (getX() / 2)) * graphWidth - pointRadius,
-      top:  (0.5 + (getY() / 2)) * graphWidth - pointRadius,
-      child: Container(
-        width:  2 * pointRadius,
-        height: 2 * pointRadius,
-        decoration: new BoxDecoration(
-          shape: BoxShape.circle,
-          color: pointColor,
-          border: Border.all(width: 0),
+    if (isInCircle()) {
+      return new Positioned(
+        left: (0.5 + (getX() / 2)) * graphWidth - pointRadius,
+        top:  (0.5 + (getY() / 2)) * graphWidth - pointRadius,
+        child: Container(
+          width:  2 * pointRadius,
+          height: 2 * pointRadius,
+          decoration: new BoxDecoration(
+            shape: BoxShape.circle,
+            color: pointColor,
+            border: Border.all(width: 0),
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return new Positioned(
+        left: (0.5 + (getX() / 2)) * graphWidth - pointRadius,
+        top:  (0.5 + (getY() / 2)) * graphWidth - pointRadius,
+        child: Container(
+          width:  2 * pointRadius,
+          height: 2 * pointRadius,
+          decoration: new BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.transparent,
+            border: Border.all(width: 1),
+          ),
+        ),
+      );
+    }
   }
 }
 
